@@ -1,10 +1,16 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+﻿<ContentPage
+ xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="gitinder.MainPage">
+             x:Class="gitinder.MainPage" >
 
-    <ScrollView>
-
-     </ScrollView>
+    <StackLayout>
+        <Label Text="{Binding repo.name}" />
+        <Label Text="{Binding repo.description}" />
+        <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
+            <Button Command="{Binding RejectCommand}" Text="Reject" />
+            <Button Text="Accept" />
+        </StackLayout>
+        <Button Text="Matches" />
+    </StackLayout>
 
 </ContentPage>
