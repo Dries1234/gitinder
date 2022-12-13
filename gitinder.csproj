@@ -53,4 +53,16 @@
 	  <Compile Remove="GithubController.cs" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Compile Update="MatchesPage.xaml.cs">
+	    <DependentUpon>MatchesPage.xaml</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiXaml Update="MatchesPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	</ItemGroup>
+
 </Project>

@@ -3,14 +3,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="gitinder.MainPage" >
 
-    <StackLayout>
+    <StackLayout HorizontalOptions="Center">
         <Label Text="{Binding repo.name}" />
         <Label Text="{Binding repo.description}" />
         <StackLayout Orientation="Horizontal" HorizontalOptions="Center">
             <Button Command="{Binding RejectCommand}" Text="Reject" />
-            <Button Text="Accept" />
+            <Button Command="{Binding AcceptCommand}" Text="Accept" />
         </StackLayout>
-        <Button Text="Matches" />
+        <Button Text="Matches" Command="{Binding MatchesCommand}" />
+
     </StackLayout>
 
 </ContentPage>

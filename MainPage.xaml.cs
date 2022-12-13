@@ -5,18 +5,22 @@ namespace gitinder;
 public class MainViewModel : ViewModelBase
 {
 
+    public NavigationPage matchesPage {get;set;}
     private Repository _repo = null;
-    public int CurrentIndex = 0;
     public Repository repo { get { return _repo; } set { _repo = value; OnPropertyChanged(); } }
 
-    public Repository[] repos { get; set; }
+    public List<Repository> repos { get; set; }
 
     public ICommand RejectCommand { get; set; }
     public ICommand AcceptCommand { get; set; }
     public ICommand MatchesCommand { get; set; }
 
-    public MainViewModel()
+    public MainPage mainPage { get; set; }
+
+    public MainViewModel(MainPage main)
     {
+
+        mainPage = main;
         RejectCommand = new Command(OnReject);
         AcceptCommand = new Command(OnAccept);
         MatchesCommand = new Command(OnMatches);
@@ -24,19 +28,30 @@ public class MainViewModel : ViewModelBase
 
     private void OnReject()
     {
-        repo = repos[CurrentIndex];
-        CurrentIndex++;
+        
+        if(repos.Count == 0) {
+            repo = new Repository();
+            return; 
+        }
+        repo = repos[0];
+        repos.RemoveAt(0);
+
+
     }
 
     private void OnAccept()
     {
-        repo = repos[CurrentIndex];
-        CurrentIndex++;
+        if (repos.Count == 0)
+        {
+            return;
+        }
+        repo = repos[0];
+        repos.RemoveAt(0);
     }
 
-    private void OnMatches()
+    private async void OnMatches()
     {
-        // Implement matches action here
+        await mainPage.Navigation.PushAsync(matchesPage);
     }
 }
 public partial class MainPage : ContentPage
@@ -45,12 +60,12 @@ public partial class MainPage : ContentPage
     public MainPage()
     {
         InitializeComponent();
-        var vm = new MainViewModel();
+        var vm = new MainViewModel(this);
         BindingContext = vm;
         // Implement reject action here
-        Task.Run(() => vm.repos = ApiController.GetPublicRepositories().Result).Wait();
-        vm.repo = vm.repos[vm.CurrentIndex];
-        vm.CurrentIndex++;
+        vm.matchesPage = new NavigationPage(new MatchesPage());
+        Task.Run(() => vm.repos = ApiController.GetPublicRepositories().Result.ToList()).Wait();
+        vm.repo = vm.repos[0];
 
     }
 }
