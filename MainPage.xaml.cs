@@ -1,15 +1,15 @@
-﻿using System.Net.WebSockets;
+﻿using System.Collections.ObjectModel;
+using System.Net.WebSockets;
 using System.Windows.Input;
 
 namespace gitinder;
 public class MainViewModel : ViewModelBase
 {
 
-    public NavigationPage matchesPage {get;set;}
     private Repository _repo = null;
     public Repository repo { get { return _repo; } set { _repo = value; OnPropertyChanged(); } }
 
-    public List<Repository> repos { get; set; }
+    public ObservableCollection<Repository> repos { get; set; }
 
     public ICommand RejectCommand { get; set; }
     public ICommand AcceptCommand { get; set; }
@@ -33,17 +33,31 @@ public class MainViewModel : ViewModelBase
             repo = new Repository();
             return; 
         }
+        if(repo == repos[0])
+        {
+            repos.RemoveAt(0);
+        }
         repo = repos[0];
         repos.RemoveAt(0);
-
-
     }
 
-    private void OnAccept()
+    private async void OnAccept()
     {
         if (repos.Count == 0)
         {
             return;
+        }
+        try
+        {
+            await ApiController.AddRepository(repo);
+        }
+        catch
+        {
+            await mainPage.DisplayAlert("Oopsie", "Something went wrong trying to add the repository to your matches :)", "Noooooooooooooo....");
+        }
+        if(repo == repos[0])
+        {
+            repos.RemoveAt(0);
         }
         repo = repos[0];
         repos.RemoveAt(0);
@@ -51,7 +65,7 @@ public class MainViewModel : ViewModelBase
 
     private async void OnMatches()
     {
-        await mainPage.Navigation.PushAsync(matchesPage);
+        await mainPage.Navigation.PushAsync(new MatchesPage());
     }
 }
 public partial class MainPage : ContentPage
@@ -63,8 +77,12 @@ public partial class MainPage : ContentPage
         var vm = new MainViewModel(this);
         BindingContext = vm;
         // Implement reject action here
-        vm.matchesPage = new NavigationPage(new MatchesPage());
-        Task.Run(() => vm.repos = ApiController.GetPublicRepositories().Result.ToList()).Wait();
+        Task.Run(() => {
+            var repositories = ApiController.GetPublicRepositories().Result.ToList();
+            var matches = ApiController.GetMatches().Result.ToList();
+            vm.repos = new ObservableCollection<Repository>(repositories.ExceptBy(matches.Select(x => x.id), x => x.id).ToList());
+            }
+        ).Wait();
         vm.repo = vm.repos[0];
 
     }
