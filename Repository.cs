@@ -15,6 +15,15 @@ namespace gitinder
         public Language primaryLanguage { get; set; }
 
         public string url { get; set; }
+
+        public bool Validate()
+        {
+            if (id != null && name != null && description != null && primaryLanguage.name !=null && url != null)
+            {
+                return true;
+            }
+            return false;
+        }
     }
     public class Language
     {

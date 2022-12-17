@@ -3,6 +3,49 @@ using System.Net.WebSockets;
 using System.Windows.Input;
 
 namespace gitinder;
+public class MockViewModel : ViewModelBase
+{
+    private Repository _repo = null;
+    public Repository repo { get { return _repo; } set { _repo = value; OnPropertyChanged(); } }
+
+    public ObservableCollection<Repository> repos { get; set; }
+
+    public ICommand RejectCommand { get; set; }
+    public ICommand AcceptCommand { get; set; }
+    public ICommand MatchesCommand { get; set; }
+
+    public MainPage mainPage { get; set; }
+
+    public MockViewModel()
+    {
+
+        RejectCommand = new Command(OnReject);
+        MatchesCommand = new Command(OnMatches);
+    }
+
+    public void OnReject()
+    {
+        
+        if(repos.Count == 0) {
+            repo = new Repository();
+            return; 
+        }
+        if(repo == repos[0])
+        {
+            repos.RemoveAt(0);
+        }
+        repo = repos[0];
+        repos.RemoveAt(0);
+    }
+
+
+    private async void OnMatches()
+    {
+        await mainPage.Navigation.PushAsync(new MatchesPage());
+    }
+
+}
+
 public class MainViewModel : ViewModelBase
 {
 
